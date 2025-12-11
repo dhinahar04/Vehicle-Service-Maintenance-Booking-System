@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inventory Management{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2><i class="bi bi-box-seam"></i> Inventory Management</h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'inventory:add' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Spare Part
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="mb-3">
+            <a href="?low_stock=true" class="btn btn-sm btn-warning">
+                <i class="bi bi-exclamation-triangle"></i> Show Low Stock Items
+            </a>
+        </div>
+        
+        {% if parts %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Part Number</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for part in parts %}
+                            <tr>
+                                <td>{{ part.name }}</td>
+                                <td>{{ part.part_number|default:"-" }}</td>
+                                <td>{{ part.category|default:"-" }}</td>
+                                <td>{{ part.quantity }}</td>
+                                <td>${{ part.unit_price|floatformat:2 }}</td>
+                                <td>
+                                    {% if part.is_low_stock %}
+                                        <span class="badge bg-warning">Low Stock</span>
+                                    {% else %}
+                                        <span class="badge bg-success">In Stock</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'inventory:edit' part.pk %}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'inventory:transaction' part.pk %}" class="btn btn-sm btn-success">
+                                        <i class="bi bi-arrow-left-right"></i>
+                                    </a>
+                                    <a href="{% url 'inventory:history' part.pk %}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-clock-history"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-box-seam"></i>
+                <p>No spare parts in inventory</p>
+                <a href="{% url 'inventory:add' %}" class="btn btn-primary">Add First Item</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Booking Status{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="bi bi-pencil"></i> Update Booking Status - #{{ booking.id }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <p><strong>Customer:</strong> {{ booking.customer.username }}</p>
+                    <p><strong>Vehicle:</strong> {{ booking.vehicle.make }} {{ booking.vehicle.model }}</p>
+                    <p><strong>Service:</strong> {{ booking.service.name }}</p>
+                    <p><strong>Current Status:</strong> <span class="badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span></p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="status" class="form-label">New Status *</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="pending" {% if booking.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="accepted" {% if booking.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                            <option value="rejected" {% if booking.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                            <option value="in_progress" {% if booking.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                            <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>Completed</option>
+                            <option value="ready_for_delivery" {% if booking.status == 'ready_for_delivery' %}selected{% endif %}>Ready for Delivery</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="mechanic-field" style="display: none;">
+                        <label for="mechanic" class="form-label">Assign Mechanic</label>
+                        <select class="form-select" id="mechanic" name="mechanic">
+                            <option value="">Select mechanic...</option>
+                            {% for mechanic in mechanics %}
+                                <option value="{{ mechanic.pk }}" {% if booking.mechanic == mechanic %}selected{% endif %}>
+                                    {{ mechanic.name }} - {{ mechanic.specialization }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="actual_cost" class="form-label">Actual Cost</label>
+                        <input type="number" class="form-control" id="actual_cost" name="actual_cost" step="0.01" value="{{ booking.actual_cost|default:'' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3">{{ booking.notes }}</textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'bookings:detail' booking.pk %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Update Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('status').addEventListener('change', function() {
+        var mechanicField = document.getElementById('mechanic-field');
+        if (this.value === 'accepted' || this.value === 'in_progress') {
+            mechanicField.style.display = 'block';
+            document.getElementById('mechanic').required = true;
+        } else {
+            mechanicField.style.display = 'none';
+            document.getElementById('mechanic').required = false;
+        }
+    });
+    
+    // Trigger on page load
+    document.getElementById('status').dispatchEvent(new Event('change'));
+</script>
+{% endblock %}
+

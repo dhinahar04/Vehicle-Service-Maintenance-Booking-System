@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Vehicles - Vehicle Service{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2><i class="bi bi-car-front"></i> My Vehicles</h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'vehicles:add' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Vehicle
+        </a>
+    </div>
+</div>
+
+{% if vehicles %}
+    <div class="row">
+        {% for vehicle in vehicles %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ vehicle.make }} {{ vehicle.model }}</h5>
+                        <p class="text-muted mb-2">
+                            <i class="bi bi-calendar"></i> {{ vehicle.year }} • 
+                            <i class="bi bi-tag"></i> {{ vehicle.vehicle_type|title }}
+                        </p>
+                        <p class="mb-2">
+                            <strong>Registration:</strong> {{ vehicle.registration_number }}<br>
+                            <strong>Fuel:</strong> {{ vehicle.fuel_type|title }}<br>
+                            <strong>Mileage:</strong> {{ vehicle.mileage|floatformat:0 }} km
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'vehicles:detail' vehicle.pk %}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                            <a href="{% url 'vehicles:edit' vehicle.pk %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body">
+            <div class="empty-state">
+                <i class="bi bi-car-front"></i>
+                <h4>No vehicles added yet</h4>
+                <p class="text-muted">Add your first vehicle to start booking services</p>
+                <a href="{% url 'vehicles:add' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Vehicle
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+

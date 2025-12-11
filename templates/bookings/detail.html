@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Details - Vehicle Service{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <a href="{% url 'bookings:list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Bookings
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>Booking #{{ booking.id }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Service:</strong> {{ booking.service.name }}</p>
+                        <p><strong>Service Center:</strong> {{ booking.service_center.name }}</p>
+                        <p><strong>Vehicle:</strong> {{ booking.vehicle.make }} {{ booking.vehicle.model }} ({{ booking.vehicle.registration_number }})</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Booking Date:</strong> {{ booking.booking_date|date:"M d, Y H:i" }}</p>
+                        <p><strong>Status:</strong> <span class="badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span></p>
+                        {% if booking.mechanic %}
+                            <p><strong>Assigned Mechanic:</strong> {{ booking.mechanic.name }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Problem Description:</strong>
+                    <p class="mt-2">{{ booking.problem_description }}</p>
+                </div>
+                {% if booking.notes %}
+                    <div class="mb-3">
+                        <strong>Notes:</strong>
+                        <p class="mt-2">{{ booking.notes }}</p>
+                    </div>
+                {% endif %}
+                {% if user.is_service_center and booking.status == 'pending' %}
+                    <div class="mt-4">
+                        <a href="{% url 'bookings:update_status' booking.pk %}" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Update Status
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if booking.status == 'completed' and user.is_customer and not feedback %}
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5>Provide Feedback</h5>
+                    <p class="text-muted">Help us improve by sharing your experience</p>
+                    <a href="{% url 'bookings:feedback' booking.pk %}" class="btn btn-primary">
+                        <i class="bi bi-star"></i> Rate & Review
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Cost Information</h5>
+            </div>
+            <div class="card-body">
+                {% if booking.estimated_cost %}
+                    <p><strong>Estimated Cost:</strong> ${{ booking.estimated_cost|floatformat:2 }}</p>
+                {% endif %}
+                {% if booking.actual_cost %}
+                    <p><strong>Actual Cost:</strong> ${{ booking.actual_cost|floatformat:2 }}</p>
+                {% endif %}
+                {% if invoice %}
+                    <hr>
+                    <p><strong>Invoice:</strong> <a href="{% url 'payments:invoice_detail' invoice.pk %}">View Invoice</a></p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if feedback %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Your Feedback</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Rating:</strong> 
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= feedback.rating %}
+                                <i class="bi bi-star-fill text-warning"></i>
+                            {% else %}
+                                <i class="bi bi-star text-muted"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                    {% if feedback.comment %}
+                        <p><strong>Comment:</strong> {{ feedback.comment }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
