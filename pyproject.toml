@@ -1,0 +1,8 @@
+[project]
+name = "vehicle-service-booking-system"
+version = "0.0.0"
+description = "Vehicle Service & Maintenance Booking System"
+requires-python = ">=3.12,<4"
+
+# This minimal pyproject.toml helps Vercel detect the desired python runtime
+# and prevents uv from choosing an incompatible interpreter.
