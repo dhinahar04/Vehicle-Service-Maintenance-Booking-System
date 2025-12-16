@@ -8,6 +8,16 @@ from pathlib import Path
 
 # Add project root to Python path
 BASE_DIR = Path(__file__).resolve().parent.parent
+"""
+Vercel serverless function for Django.
+This handler works with Vercel's Python runtime.
+"""
+import os
+import sys
+from pathlib import Path
+
+# Add project root to Python path
+BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
 # Set Django settings
@@ -18,7 +28,6 @@ import django
 django.setup()
 
 from django.core.wsgi import get_wsgi_application
-from django.core.handlers.wsgi import WSGIHandler
 
 # Get Django WSGI application
 django_app = get_wsgi_application()
@@ -26,23 +35,9 @@ django_app = get_wsgi_application()
 def handler(request):
     """
     Vercel serverless function handler.
-    
-    Args:
-        request: Vercel request object with:
-            - method: HTTP method
-            - path: Request path
-            - headers: Request headers dict
-            - body: Request body (bytes)
-            - query_string: Query string
-    
-    Returns:
-        Response object with:
-            - status: HTTP status code
-            - headers: Response headers dict
-            - body: Response body (string)
     """
     from io import BytesIO
-    
+
     # Build WSGI environ dictionary
     environ = {
         'REQUEST_METHOD': request.method,
@@ -62,29 +57,28 @@ def handler(request):
         'wsgi.multiprocess': True,
         'wsgi.run_once': False,
     }
-    
+
     # Add HTTP headers to environ
     for key, value in request.headers.items():
         key_upper = key.upper().replace('-', '_')
         if key_upper not in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
             environ[f'HTTP_{key_upper}'] = value
-    
+
     # Call Django WSGI application
     response_data = []
-    
+
     def start_response(status, response_headers):
         response_data.append((status, response_headers))
-    
+
     # Execute Django application
     result = django_app(environ, start_response)
-    
+
     # Extract response
     status, headers = response_data[0]
     status_code = int(status.split()[0])
     body = b''.join(result)
-    
+
     # Return response in Vercel format
-    # Note: Vercel Python runtime expects a dict with status, headers, body
     return {
         'statusCode': status_code,
         'headers': dict(headers),
