@@ -23,19 +23,33 @@ sys.path.insert(0, str(BASE_DIR))
 # Set Django settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vehicle_service.settings')
 
-# Initialize Django
-import django
-django.setup()
+_django_app = None
 
-from django.core.wsgi import get_wsgi_application
+def _init_django():
+    """Initialize Django and return the WSGI application (cached)."""
+    global _django_app
+    if _django_app is not None:
+        return _django_app
+    import django
+    django.setup()
+    from django.core.wsgi import get_wsgi_application
+    _django_app = get_wsgi_application()
+    return _django_app
 
-# Get Django WSGI application
-django_app = get_wsgi_application()
 
 def handler(request):
+    """Vercel serverless function handler.
+
+    Fast health-check: return 200 for /health without initializing Django so
+    platform probes can succeed even if Django setup would fail.
     """
-    Vercel serverless function handler.
-    """
+    # Lightweight health-check route that avoids loading Django
+    if request.path in ("/health", "/api/health"):
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'text/plain'},
+            'body': 'OK'
+        }
     from io import BytesIO
 
     # Build WSGI environ dictionary
@@ -69,6 +83,9 @@ def handler(request):
 
     def start_response(status, response_headers):
         response_data.append((status, response_headers))
+
+    # Ensure Django is initialized (lazy)
+    django_app = _init_django()
 
     # Execute Django application
     result = django_app(environ, start_response)
