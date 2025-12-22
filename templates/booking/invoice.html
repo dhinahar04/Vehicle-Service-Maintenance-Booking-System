@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Invoice - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h2><i class="bi bi-receipt"></i> Invoice</h2>
+                        <p class="text-muted">Invoice Number: {{ invoice.invoice_number }}</p>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Service Center</h6>
+                            <p class="mb-1"><strong>{{ booking.service_center.name }}</strong></p>
+                            <p class="mb-1">{{ booking.service_center.address }}</p>
+                            <p class="mb-1">Phone: {{ booking.service_center.phone }}</p>
+                            <p class="mb-0">Email: {{ booking.service_center.email }}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h6>Customer</h6>
+                            <p class="mb-1"><strong>{{ booking.vehicle.owner.get_full_name|default:booking.vehicle.owner.username }}</strong></p>
+                            <p class="mb-1">{{ booking.vehicle.owner.email }}</p>
+                            <p class="mb-0">Phone: {{ booking.vehicle.owner.phone }}</p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <h6>Vehicle Information</h6>
+                        <p class="mb-1"><strong>Vehicle:</strong> {{ booking.vehicle.brand }} {{ booking.vehicle.model }}</p>
+                        <p class="mb-0"><strong>Registration:</strong> {{ booking.vehicle.registration_number }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>Service Details</h6>
+                        <p class="mb-1"><strong>Service Type:</strong> {{ booking.service_category.name }}</p>
+                        <p class="mb-0"><strong>Description:</strong> {{ booking.service_description }}</p>
+                    </div>
+
+                    <hr>
+
+                    <div class="table-responsive mb-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Service Charge</td>
+                                    <td class="text-end">₹{{ invoice.subtotal }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax (18%)</td>
+                                    <td class="text-end">₹{{ invoice.tax }}</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td><strong>Total</strong></td>
+                                    <td class="text-end"><strong>₹{{ invoice.total }}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-center mb-3">
+                        <span class="badge {% if invoice.payment_status == 'paid' %}bg-success{% elif invoice.payment_status == 'pending' %}bg-warning{% else %}bg-danger{% endif %} fs-6">
+                            Payment Status: {{ invoice.get_payment_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="text-center">
+                        <button onclick="window.print()" class="btn btn-primary">
+                            <i class="bi bi-printer"></i> Print Invoice
+                        </button>
+                        {% if booking.vehicle.owner == request.user and invoice.payment_status != 'paid' %}
+                        <form method="post" action="{% url 'pay_invoice' booking.id %}" style="display:inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success ms-2">
+                                <i class="bi bi-credit-card"></i> Pay Now
+                            </button>
+                        </form>
+                        {% endif %}
+                        <a href="{% url 'booking_detail' booking.id %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .navbar, .footer, .btn {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+
+

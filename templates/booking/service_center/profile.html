@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Service Center Profile - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="bi bi-building"></i> 
+                        {% if is_update %}Update{% else %}Create{% endif %} Service Center Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if is_update and service_center %}
+                    <div class="mb-4 border rounded p-3 bg-light">
+                        <h5 class="mb-2">Current Profile</h5>
+                        <p class="mb-1"><strong>Name:</strong> {{ service_center.name }}</p>
+                        <p class="mb-1"><strong>Address:</strong> {{ service_center.address }}</p>
+                        <p class="mb-1"><strong>Phone:</strong> {{ service_center.phone }}</p>
+                        <p class="mb-0"><strong>Email:</strong> {{ service_center.email }}</p>
+                    </div>
+                    {% endif %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Service Center Name</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            {{ form.address }}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                {{ form.phone }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="opening_time" class="form-label">Opening Time</label>
+                                {{ form.opening_time }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="closing_time" class="form-label">Closing Time</label>
+                                {{ form.closing_time }}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save Profile
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

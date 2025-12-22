@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Details - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-info-circle"></i> Booking Details #{{ booking.id }}</h4>
+                    <span class="status-badge status-{{ booking.status }}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Vehicle Information</h6>
+                            <p class="mb-1"><strong>Vehicle:</strong> {{ booking.vehicle.brand }} {{ booking.vehicle.model }}</p>
+                            <p class="mb-1"><strong>Type:</strong> {{ booking.vehicle.get_vehicle_type_display }}</p>
+                            <p class="mb-0"><strong>Registration:</strong> {{ booking.vehicle.registration_number }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Customer Information</h6>
+                            <p class="mb-1"><strong>Name:</strong> {{ booking.vehicle.owner.get_full_name|default:booking.vehicle.owner.username }}</p>
+                            <p class="mb-1"><strong>Email:</strong> {{ booking.vehicle.owner.email }}</p>
+                            <p class="mb-0"><strong>Phone:</strong> {{ booking.vehicle.owner.phone }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Service Information</h6>
+                            <p class="mb-1"><strong>Service Type:</strong> {{ booking.service_category.name }}</p>
+                            <p class="mb-1"><strong>Date & Time:</strong> {{ booking.booking_date }} {{ booking.booking_time }}</p>
+                            <p class="mb-0"><strong>Description:</strong> {{ booking.service_description }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Cost Information</h6>
+                            <p class="mb-1"><strong>Estimated Cost:</strong> ₹{{ booking.estimated_cost }}</p>
+                            {% if booking.actual_cost %}
+                            <p class="mb-0"><strong>Actual Cost:</strong> ₹{{ booking.actual_cost }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Update Status Form -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="mb-3"><i class="bi bi-gear"></i> Update Booking</h5>
+                            <form method="post" action="{% url 'update_booking_status' booking.id %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="status" class="form-label">Update Status</label>
+                                        <select name="status" id="status" class="form-control">
+                                            {% for value, label in booking.STATUS_CHOICES %}
+                                            <option value="{{ value }}" {% if booking.status == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="mechanic_id" class="form-label">Assign Mechanic</label>
+                                        <select name="mechanic_id" id="mechanic_id" class="form-control">
+                                            <option value="">Select Mechanic</option>
+                                            {% for mechanic in booking.service_center.mechanics.all %}
+                                            <option value="{{ mechanic.id }}" {% if booking.mechanic and booking.mechanic.id == mechanic.id %}selected{% endif %}>
+                                                {{ mechanic.user.username }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="actual_cost" class="form-label">Actual Cost (₹)</label>
+                                        <input type="number" step="0.01" name="actual_cost" id="actual_cost" 
+                                               class="form-control" value="{% if booking.actual_cost %}{{ booking.actual_cost }}{% endif %}" 
+                                               placeholder="Enter actual cost">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Update Booking
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {% if invoice %}
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-receipt"></i> Invoice Generated</h6>
+                        <p class="mb-1"><strong>Invoice Number:</strong> {{ invoice.invoice_number }}</p>
+                        <p class="mb-1"><strong>Total Amount:</strong> ₹{{ invoice.total }}</p>
+                        <p class="mb-0"><strong>Payment Status:</strong> {{ invoice.get_payment_status_display }}</p>
+                        <a href="{% url 'view_invoice' booking.id %}" class="btn btn-sm btn-primary mt-2">
+                            <i class="bi bi-download"></i> View Invoice
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <a href="{% url 'manage_bookings' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Bookings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

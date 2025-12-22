@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}My Vehicles - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-car-front"></i> My Vehicles</h2>
+        <a href="{% url 'add_vehicle' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Vehicle
+        </a>
+    </div>
+
+    {% if vehicles %}
+    <div class="row g-4">
+        {% for vehicle in vehicles %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ vehicle.brand }} {{ vehicle.model }}</h5>
+                    <p class="text-muted mb-2">{{ vehicle.get_vehicle_type_display }} • {{ vehicle.year }}</p>
+                    <p class="mb-1"><strong>Registration:</strong> {{ vehicle.registration_number }}</p>
+                    {% if vehicle.color %}
+                    <p class="mb-1"><strong>Color:</strong> {{ vehicle.color }}</p>
+                    {% endif %}
+                    <p class="mb-3"><strong>Mileage:</strong> {{ vehicle.mileage }} km</p>
+                    <a href="{% url 'book_service' %}?vehicle={{ vehicle.id }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-calendar-plus"></i> Book Service
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-car-front display-1 text-muted"></i>
+            <h4 class="mt-3">No vehicles added yet</h4>
+            <p class="text-muted">Add your first vehicle to start booking services</p>
+            <a href="{% url 'add_vehicle' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Vehicle
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+

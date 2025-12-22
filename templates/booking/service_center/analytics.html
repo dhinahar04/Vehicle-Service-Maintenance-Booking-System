@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4"><i class="bi bi-graph-up"></i> Analytics</h2>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-calendar"></i> Daily Bookings (Last 30 Days)</h5>
+                </div>
+                <div class="card-body">
+                    {% if daily_bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in daily_bookings %}
+                                <tr>
+                                    <td>{{ booking.created_at__date }}</td>
+                                    <td>{{ booking.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-star"></i> Most Requested Services</h5>
+                </div>
+                <div class="card-body">
+                    {% if popular_services %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in popular_services %}
+                                <tr>
+                                    <td>{{ service.service_category__name }}</td>
+                                    <td>{{ service.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-people"></i> Most Frequent Customers</h5>
+                </div>
+                <div class="card-body">
+                    {% if frequent_customers %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Bookings</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in frequent_customers %}
+                                <tr>
+                                    <td>{{ customer.vehicle__owner__username }}</td>
+                                    <td>{{ customer.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-cash-coin"></i> Monthly Revenue</h5>
+                </div>
+                <div class="card-body">
+                    {% if monthly_revenue %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Revenue (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for revenue in monthly_revenue %}
+                                <tr>
+                                    <td>{{ revenue.month }}</td>
+                                    <td>₹{{ revenue.total|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

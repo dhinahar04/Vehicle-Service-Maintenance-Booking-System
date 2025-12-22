@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Mechanic Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h3 class="mb-3"><i class="bi bi-person-plus"></i> Request Mechanic Profile</h3>
+                    <p class="lead">Please choose the service center you belong to (if known) and add a short message for the admin.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="service_center" class="form-label">Service Center (optional)</label>
+                            <select name="service_center" id="service_center" class="form-select">
+                                <option value="">-- Select (optional) --</option>
+                                {% for sc in service_centers %}
+                                    <option value="{{ sc.id }}">{{ sc.name }} - {{ sc.address|truncatechars:60 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message for admin (optional)</label>
+                            <textarea name="message" id="message" rows="4" class="form-control" placeholder="I am a mechanic and would like to be added to ..."></textarea>
+                        </div>
+                        <button class="btn btn-primary">Submit request</button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary ms-2">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

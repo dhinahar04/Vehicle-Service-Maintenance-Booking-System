@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Details - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-info-circle"></i> Booking Details #{{ booking.id }}</h4>
+                    <span class="status-badge status-{{ booking.status }}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Vehicle Information</h6>
+                            <p class="mb-1"><strong>Vehicle:</strong> {{ booking.vehicle.brand }} {{ booking.vehicle.model }}</p>
+                            <p class="mb-1"><strong>Type:</strong> {{ booking.vehicle.get_vehicle_type_display }}</p>
+                            <p class="mb-0"><strong>Registration:</strong> {{ booking.vehicle.registration_number }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Service Information</h6>
+                            <p class="mb-1"><strong>Service Center:</strong> {{ booking.service_center.name }}</p>
+                            <p class="mb-1"><strong>Service Type:</strong> {{ booking.service_category.name }}</p>
+                            <p class="mb-0"><strong>Date & Time:</strong> {{ booking.booking_date }} {{ booking.booking_time }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Service Description</h6>
+                        <p>{{ booking.service_description }}</p>
+                    </div>
+                    
+                    {% if booking.mechanic %}
+                    <div class="mb-3">
+                        <h6>Assigned Mechanic</h6>
+                        <p>{{ booking.mechanic.user.get_full_name|default:booking.mechanic.user.username }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Cost Information</h6>
+                            <p class="mb-1"><strong>Estimated Cost:</strong> ₹{{ booking.estimated_cost }}</p>
+                            {% if booking.actual_cost %}
+                            <p class="mb-0"><strong>Actual Cost:</strong> ₹{{ booking.actual_cost }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if invoice %}
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-receipt"></i> Invoice Generated</h6>
+                        <p class="mb-1"><strong>Invoice Number:</strong> {{ invoice.invoice_number }}</p>
+                        <p class="mb-1"><strong>Total Amount:</strong> ₹{{ invoice.total }}</p>
+                        <p class="mb-0"><strong>Payment Status:</strong> {{ invoice.get_payment_status_display }}</p>
+                        <a href="{% url 'view_invoice' booking.id %}" class="btn btn-sm btn-primary mt-2">
+                            <i class="bi bi-download"></i> View Invoice
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.status == 'completed' and not feedback %}
+                    <div class="alert alert-success">
+                        <h6>Service Completed!</h6>
+                        <p>Please provide your feedback to help us improve.</p>
+                        <a href="{% url 'add_feedback' booking.id %}" class="btn btn-sm btn-success">
+                            <i class="bi bi-star"></i> Add Feedback
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if feedback %}
+                    <div class="alert alert-warning">
+                        <h6><i class="bi bi-star-fill"></i> Your Feedback</h6>
+                        <p class="mb-1"><strong>Rating:</strong> {{ feedback.rating }}/5</p>
+                        {% if feedback.comment %}
+                        <p class="mb-0"><strong>Comment:</strong> {{ feedback.comment }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {# Cancel button allowed when booking is pending or accepted #}
+                    {# "split" filter isn't available by default in Django templates; use explicit checks. #}
+                    {% if booking.status == 'pending' or booking.status == 'accepted' %}
+                    <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display:inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-x-circle"></i> Cancel Booking
+                        </button>
+                    </form>
+                    {% endif %}
+
+                    <a href="{% url 'my_bookings' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Bookings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

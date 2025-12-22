@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Details - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-info-circle"></i> Booking Details #{{ booking.id }}</h4>
+                    <span class="status-badge status-{{ booking.status }}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Vehicle Information</h6>
+                            <p class="mb-1"><strong>Vehicle:</strong> {{ booking.vehicle.brand }} {{ booking.vehicle.model }}</p>
+                            <p class="mb-1"><strong>Type:</strong> {{ booking.vehicle.get_vehicle_type_display }}</p>
+                            <p class="mb-0"><strong>Registration:</strong> {{ booking.vehicle.registration_number }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Service Information</h6>
+                            <p class="mb-1"><strong>Service Type:</strong> {{ booking.service_category.name }}</p>
+                            <p class="mb-1"><strong>Date & Time:</strong> {{ booking.booking_date }} {{ booking.booking_time }}</p>
+                            <p class="mb-0"><strong>Service Center:</strong> {{ booking.service_center.name }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Service Description</h6>
+                        <p>{{ booking.service_description }}</p>
+                    </div>
+
+                    <!-- Update Status Form -->
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <h5 class="mb-3"><i class="bi bi-gear"></i> Update Task Status</h5>
+                            <form method="post" action="{% url 'update_task_status' booking.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="in_progress" {% if booking.status == 'in_progress' %}selected{% endif %}>
+                                            In Progress
+                                        </option>
+                                        <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>
+                                            Completed
+                                        </option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Update Status
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'mechanic_tasks' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Tasks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

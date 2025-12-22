@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Service Center Dashboard - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 sidebar">
+            <div class="p-3">
+                <h5 class="mb-3"><i class="bi bi-menu-button-wide"></i> Menu</h5>
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="{% url 'dashboard' %}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="{% url 'service_center_profile' %}">
+                        <i class="bi bi-building"></i> Profile
+                    </a>
+                    <a class="nav-link" href="{% url 'manage_bookings' %}">
+                        <i class="bi bi-calendar-check"></i> Manage Bookings
+                    </a>
+                    <a class="nav-link" href="{% url 'manage_mechanics' %}">
+                        <i class="bi bi-people"></i> Mechanics
+                    </a>
+                    <a class="nav-link" href="{% url 'manage_inventory' %}">
+                        <i class="bi bi-box-seam"></i> Inventory
+                    </a>
+                    <a class="nav-link" href="{% url 'analytics' %}">
+                        <i class="bi bi-graph-up"></i> Analytics
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 p-4">
+            <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Service Center Dashboard</h2>
+            <p class="text-muted mb-4">Welcome, {{ service_center.name }}</p>
+            
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h6 class="text-white-50">Total Bookings</h6>
+                        <h3>{{ total_bookings }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h6 class="text-white-50">Today's Bookings</h6>
+                            <h3>{{ today_bookings }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h6 class="text-white-50">Pending</h6>
+                            <h3>{{ pending_bookings }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h6 class="text-white-50">Total Revenue</h6>
+                            <h3>₹{{ total_revenue }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bookings -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Bookings</h5>
+                    <a href="{% url 'manage_bookings' %}" class="btn btn-sm btn-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Vehicle</th>
+                                    <th>Customer</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td>#{{ booking.id }}</td>
+                                    <td>{{ booking.vehicle.brand }} {{ booking.vehicle.model }}</td>
+                                    <td>{{ booking.vehicle.owner.username }}</td>
+                                    <td>{{ booking.service_category.name }}</td>
+                                    <td>{{ booking.booking_date }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ booking.status }}">
+                                            {{ booking.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center text-muted">No bookings yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

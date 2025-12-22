@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Mechanic Profile Required{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-body text-center">
+                    <h3 class="mb-3"><i class="bi bi-person-badge"></i> Mechanic Profile Required</h3>
+                    <p class="lead">Hi {{ user.username }}, we couldn't find a mechanic profile attached to your account.</p>
+                    <p>Please contact your service center admin to have your mechanic profile created, or if you manage the service center, create a mechanic profile from the service center dashboard.</p>
+                    <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Go to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

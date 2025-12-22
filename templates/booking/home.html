@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Vehicle Service Booking System{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Hero Section -->
+    <div class="bg-primary text-white py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container text-center py-5">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="bi bi-tools"></i> Vehicle Service Booking System
+            </h1>
+            <p class="lead mb-4">Book your vehicle service online. Track progress in real-time. Get quality service.</p>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg me-2">
+                <i class="bi bi-person-plus"></i> Get Started
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+            {% else %}
+            <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg">
+                <i class="bi bi-speedometer2"></i> Go to Dashboard
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container my-5">
+        <h2 class="text-center mb-5">Why Choose Us?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-calendar-check display-4 text-primary mb-3"></i>
+                        <h4 class="card-title">Easy Booking</h4>
+                        <p class="card-text">Book your vehicle service in just a few clicks. Choose your preferred date and time.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-graph-up-arrow display-4 text-success mb-3"></i>
+                        <h4 class="card-title">Track Progress</h4>
+                        <p class="card-text">Monitor your service status in real-time. Get updates at every stage.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-shield-check display-4 text-warning mb-3"></i>
+                        <h4 class="card-title">Quality Service</h4>
+                        <p class="card-text">Professional mechanics and quality service guaranteed for your vehicle.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Centers Section -->
+    {% if service_centers %}
+    <div class="container my-5">
+        <h2 class="text-center mb-5">Our Service Centers</h2>
+        <div class="row g-4">
+            {% for center in service_centers %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ center.name }}</h5>
+                        <p class="card-text text-muted">{{ center.description|truncatewords:20 }}</p>
+                        <p class="mb-1"><i class="bi bi-geo-alt"></i> {{ center.address|truncatewords:10 }}</p>
+                        <p class="mb-1"><i class="bi bi-telephone"></i> {{ center.phone }}</p>
+                        <p class="mb-0"><i class="bi bi-envelope"></i> {{ center.email }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
