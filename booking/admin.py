@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     User, ServiceCenter, Vehicle, Mechanic, ServiceCategory,
-    Booking, Invoice, Inventory, Feedback
+    Booking, Invoice, Inventory, Feedback, MechanicRequest
 )
 
 
@@ -64,6 +64,14 @@ class InventoryAdmin(admin.ModelAdmin):
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = ['booking', 'rating', 'created_at']
     list_filter = ['rating', 'created_at']
+
+
+@admin.register(MechanicRequest)
+class MechanicRequestAdmin(admin.ModelAdmin):
+    list_display = ['user', 'service_center', 'handled', 'created_at']
+    list_filter = ['handled', 'created_at', 'service_center']
+    search_fields = ['user__username', 'message']
+    readonly_fields = ['created_at']
 
 
 

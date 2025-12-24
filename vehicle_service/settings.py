@@ -4,6 +4,7 @@ Django settings for vehicle_service project.
 
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,12 +14,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-vehicle-service-booking-system-2024'
+SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-vehicle-service-booking-system-2024')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='*').split(',')
 
 
 # Application definition
@@ -67,12 +68,33 @@ WSGI_APPLICATION = 'vehicle_service.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# MongoDB Configuration
+MONGODB_URI = config('MONGODB_URI', default='')
+
+if MONGODB_URI:
+    # Use MongoDB with djongo
+    # Connection string format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
+    DATABASES = {
+        'default': {
+            'ENGINE': 'djongo',
+            'NAME': 'vehicle_management',
+            'CLIENT': {
+                'host': MONGODB_URI,
+                'serverSelectionTimeoutMS': 5000,
+            },
+            'OPTIONS': {
+                'connect': True,
+            }
+        }
     }
-}
+else:
+    # Fallback to SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation

@@ -495,14 +495,20 @@ def update_booking_status(request, booking_id):
             if new_status == 'completed':
                 booking.completed_at = timezone.now()
                 # Create invoice if not exists
-                if not hasattr(booking, 'invoice'):
+                try:
+                    _ = booking.invoice
+                except Invoice.DoesNotExist:
                     invoice_number = f"INV-{booking.id}-{datetime.now().strftime('%Y%m%d')}"
+                    subtotal = booking.actual_cost or booking.estimated_cost
+                    subtotal = Decimal(subtotal)
+                    tax = (subtotal * Decimal('0.18')).quantize(Decimal('0.01'))
+                    total = (subtotal + tax).quantize(Decimal('0.01'))
                     invoice = Invoice.objects.create(
                         booking=booking,
                         invoice_number=invoice_number,
-                        subtotal=booking.actual_cost or booking.estimated_cost,
-                        tax=(booking.actual_cost or booking.estimated_cost) * 0.18,  # 18% tax
-                        total=(booking.actual_cost or booking.estimated_cost) * 1.18,
+                        subtotal=subtotal,
+                        tax=tax,
+                        total=total,
                     )
             
             booking.save()

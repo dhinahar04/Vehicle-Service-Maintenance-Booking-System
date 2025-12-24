@@ -1,17 +1,34 @@
 {% extends 'base.html' %}
 
-{% block title %}Mechanic Profile Required{% endblock %}
+{% block title %}Mechanic Profile Required - Vehicle Service Booking System{% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
         <div class="col-md-8">
-            <div class="card mt-5">
-                <div class="card-body text-center">
-                    <h3 class="mb-3"><i class="bi bi-person-badge"></i> Mechanic Profile Required</h3>
-                    <p class="lead">Hi {{ user.username }}, we couldn't find a mechanic profile attached to your account.</p>
-                    <p>Please contact your service center admin to have your mechanic profile created, or if you manage the service center, create a mechanic profile from the service center dashboard.</p>
-                    <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Go to Home</a>
+            <div class="card">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-person-badge display-1 text-warning"></i>
+                    </div>
+                    <h2 class="mb-4">Mechanic Profile Required</h2>
+                    <p class="lead mb-3">Hi <strong>{{ user.username }}</strong>, we couldn't find a mechanic profile attached to your account.</p>
+                    <div class="alert alert-info text-start">
+                        <h5 class="alert-heading"><i class="bi bi-info-circle"></i> What to do next:</h5>
+                        <ul class="mb-0">
+                            <li>Contact your <strong>Service Center Administrator</strong> to have your mechanic profile created</li>
+                            <li>If you manage a service center, you can create a mechanic profile from the <strong>Service Center Dashboard</strong></li>
+                            <li>Once your profile is created, you'll be able to view and manage assigned tasks</li>
+                        </ul>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-primary me-2">
+                            <i class="bi bi-house"></i> Go to Home
+                        </a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: vehicle-service-booking
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn vehicle_service.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.13
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: False
+      - key: DJANGO_ALLOWED_HOSTS
+        value: vehicle-service-booking.onrender.com
+      - key: MONGODB_URI
+        sync: false
+
