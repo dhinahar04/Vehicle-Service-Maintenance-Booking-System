@@ -72,21 +72,32 @@ WSGI_APPLICATION = 'vehicle_service.wsgi.application'
 MONGODB_URI = config('MONGODB_URI', default='')
 
 if MONGODB_URI:
-    # Use MongoDB with djongo
+    # MongoDB support - requires djongo package (install separately if needed)
+    # Note: djongo has compatibility issues, SQLite is recommended for development
+    # To use MongoDB: pip install djongo==1.3.6 (may require additional dependencies)
     # Connection string format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
-    DATABASES = {
-        'default': {
-            'ENGINE': 'djongo',
-            'NAME': 'vehicle_management',
-            'CLIENT': {
-                'host': MONGODB_URI,
-                'serverSelectionTimeoutMS': 5000,
-            },
-            'OPTIONS': {
-                'connect': True,
+    try:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'djongo',
+                'NAME': 'vehicle_management',
+                'CLIENT': {
+                    'host': MONGODB_URI,
+                    'serverSelectionTimeoutMS': 5000,
+                },
+                'OPTIONS': {
+                    'connect': True,
+                }
             }
         }
-    }
+    except ImportError:
+        # Fallback to SQLite if djongo is not installed
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 else:
     # Fallback to SQLite for local development
     DATABASES = {
